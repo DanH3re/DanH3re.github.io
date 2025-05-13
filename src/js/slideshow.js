@@ -257,18 +257,15 @@ function startAutoplay() {
 }
 
 function pauseAutoplay() {
-    // Clear any existing interval
     if (slideshowInterval) {
         clearInterval(slideshowInterval);
         slideshowInterval = null;
     }
     
-    // Clear any existing timeout to restart
     if (autoplayPauseTimeout) {
         clearTimeout(autoplayPauseTimeout);
     }
     
-    // Set a timeout to restart autoplay after pauseDelay
     autoplayPauseTimeout = setTimeout(() => {
         startAutoplay();
     }, pauseDelay);
