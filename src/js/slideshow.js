@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', initializeSlideshow);
 
 // State variables
 let slideIndex = 1;
-let previousSlideIndex = 1;
 let slideshowInterval;
 let autoplayPauseTimeout;
 const autoplayDelay = 5000;
@@ -53,6 +52,14 @@ function generateThumbnails() {
             thumbnailImg.alt = '';
             thumbnail.appendChild(thumbnailImg);
         }
+
+        thumbnail.addEventListener('click', () => {
+            const clickIndex = index + 1;
+            if (slideIndex !== clickIndex) {
+                pauseAutoplay();
+            }
+            showSlide(clickIndex);
+        });
         
         slideSelector.appendChild(thumbnail);
     });
@@ -115,20 +122,17 @@ function plusSlides(n) {
 }
 
 function showSlide(n) {
-    if (n !== slideIndex) {
-        pauseAutoplay();
-    }
-
+    console.log(`Showing slide ${n}`);
+    
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
     const thumbnails = document.querySelectorAll('.slide-minimized');
     
     if (!slides.length) return;
+    slideIndex = n;
     
-    previousSlideIndex = slideIndex;
-    
-    if (n > slides.length) slideIndex = 1;
-    if (n < 1) slideIndex = slides.length;
+    if (slideIndex > slides.length) slideIndex = 1;
+    if (slideIndex < 1) slideIndex = slides.length;
     
     hideAllSlides(slides);
     resetActiveIndicators(dots, thumbnails);
