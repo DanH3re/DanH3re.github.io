@@ -571,7 +571,6 @@ main .product-card h4 {
 
 main .product-card .card-header {
     height: 300px;
-    background-image: url('../img/vendor1.webp');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
