@@ -4,7 +4,9 @@ document.addEventListener('DOMContentLoaded', initializeSlideshow);
 let slideIndex = 1;
 let previousSlideIndex = 1;
 let slideshowInterval;
+let autoplayPauseTimeout;
 const autoplayDelay = 5000;
+const pauseDelay = 10000; // 10 seconds pause after manual interaction
 
 // Animation styles
 const animationStyle = {
@@ -79,7 +81,10 @@ function generateDotIndicators() {
             if (i === 0) dot.classList.add('active');
             
             dot.onclick = () => {
-                currentSlide(i + 1);
+                if (slideIndex !== i + 1) {
+                    pauseAutoplay();
+                }
+                showSlide(i + 1);
             };
             
             dot.tabIndex = 0;
@@ -87,7 +92,10 @@ function generateDotIndicators() {
             
             dot.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                    currentSlide(i + 1);
+                    if (slideIndex !== i + 1) {
+                        pauseAutoplay();
+                    }
+                    showSlide(i + 1);
                     e.preventDefault();
                 }
             });
@@ -100,14 +108,17 @@ function generateDotIndicators() {
 // Navigation
 
 function plusSlides(n) {
+    if (n !== 0) {
+        pauseAutoplay();
+    }
     showSlide(slideIndex += n);
 }
 
-function currentSlide(n) {
-    showSlide(slideIndex = n);
-}
-
 function showSlide(n) {
+    if (n !== slideIndex) {
+        pauseAutoplay();
+    }
+
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
     const thumbnails = document.querySelectorAll('.slide-minimized');
@@ -177,12 +188,18 @@ function setupThumbnailListeners() {
     
     thumbnails.forEach((thumbnail, index) => {
         thumbnail.addEventListener('click', () => {
-            currentSlide(index + 1);
+            if (slideIndex !== index + 1) {
+                pauseAutoplay();
+            }
+            showSlide(index + 1);
         });
         
         thumbnail.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
-                currentSlide(index + 1);
+                if (slideIndex !== index + 1) {
+                    pauseAutoplay();
+                }
+                showSlide(index + 1);
                 e.preventDefault();
             }
         });
@@ -237,4 +254,22 @@ function startAutoplay() {
     slideshowInterval = setInterval(() => {
         plusSlides(1);
     }, autoplayDelay);
+}
+
+function pauseAutoplay() {
+    // Clear any existing interval
+    if (slideshowInterval) {
+        clearInterval(slideshowInterval);
+        slideshowInterval = null;
+    }
+    
+    // Clear any existing timeout to restart
+    if (autoplayPauseTimeout) {
+        clearTimeout(autoplayPauseTimeout);
+    }
+    
+    // Set a timeout to restart autoplay after pauseDelay
+    autoplayPauseTimeout = setTimeout(() => {
+        startAutoplay();
+    }, pauseDelay);
 }
